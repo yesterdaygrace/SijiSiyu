@@ -1,0 +1,1487 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <title>Saved — Your Threads library</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" />
+  </noscript>
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #0c0c0c;
+      --surface-2: #141414;
+      --surface-hover: #161616;
+      --text: #ffffff;
+      --text-body: #a3a3a3;
+      --muted: #737373;
+      --subtle: #525252;
+      --line: #222222;
+      --line-strong: #333333;
+      --accent: #ffffff;
+      --accent-fg: #000000;
+      --accent-soft: #181818;
+      --danger: #ffffff;
+      --danger-soft: #242424;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: dark; background: #000000; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: #ffffff; color: #000000; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+
+    .app { display: grid; grid-template-columns: 244px minmax(0, 1fr); min-height: 100vh; }
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 27px 17px 18px;
+      border-right: 1px solid var(--line);
+      background: #080808;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px; text-decoration: none; color: #ffffff; }
+    .brand-mark {
+      width: 37px;
+      height: 37px;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      border-radius: 10px;
+      color: #000000;
+      border: 1px solid #ffffff;
+    }
+    .brand-name {
+      font-family: Manrope, sans-serif;
+      font-size: 21px;
+      line-height: 1;
+      letter-spacing: -.9px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .brand-caption {
+      margin-top: 5px;
+      font-size: 10px;
+      letter-spacing: 1.15px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .nav-section-label {
+      padding: 0 12px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      color: var(--subtle);
+      letter-spacing: 1.15px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .nav-list { display: grid; gap: 4px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: transparent;
+      color: #888888;
+      text-align: left;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .nav-item:hover { background: #141414; color: #ffffff; border-color: #222222; }
+    .nav-item.active { background: #161616; color: #ffffff; font-weight: 700; border-color: #2b2b2b; }
+    .nav-item .label { flex: 1; }
+    .nav-count {
+      min-width: 23px;
+      text-align: center;
+      border-radius: 6px;
+      background: #1f1f1f;
+      border: 1px solid #2a2a2a;
+      padding: 2px 5px;
+      color: #a3a3a3;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .nav-item.active .nav-count { background: #262626; color: #ffffff; border-color: #383838; }
+    .ico { width: 18px; height: 18px; flex: 0 0 auto; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    
+    .sidebar-bottom { margin-top: auto; }
+    .sync-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: var(--surface);
+    }
+    .sync-heading { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 12px; color: #ffffff; }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    @keyframes pulse-monochrome {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.82); }
+    }
+    .status-dot.status-connected {
+      background: #ffffff;
+      box-shadow: 0 0 0 2px #000000;
+    }
+    .status-dot.status-live-pulse {
+      background: #ffffff;
+      box-shadow: 0 0 0 2px #000000;
+      animation: pulse-monochrome 2.2s ease-in-out infinite;
+    }
+    .status-dot.status-disconnected {
+      background: transparent;
+      border: 1.5px solid #666666;
+    }
+    @keyframes post-slide-in {
+      from { opacity: 0; transform: translateY(-7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .post-just-arrived {
+      animation: post-slide-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      border-color: #555555 !important;
+    }
+    .sync-copy { color: var(--muted); font-size: 11px; line-height: 1.55; margin: 8px 0 12px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 12px;
+      transition: transform .12s, background .15s, border-color .15s, color .15s;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn-dark {
+      background: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+    }
+    .btn-dark:hover { background: #e5e5e5; border-color: #e5e5e5; }
+    .btn-light {
+      background: #000000;
+      color: #ffffff;
+      border-color: var(--line-strong);
+    }
+    .btn-light:hover { background: #141414; border-color: #484848; }
+    .btn-full { width: 100%; }
+
+    .main { padding: 30px clamp(22px, 4vw, 56px) 36px; max-width: 1600px; width: 100%; margin: 0 auto; }
+    .topbar { display: flex; align-items: center; gap: 18px; margin-bottom: 33px; }
+    .breadcrumb { color: var(--muted); font-size: 12px; display: flex; align-items: center; gap: 8px; }
+    .breadcrumb strong { color: #ffffff; }
+    .topbar-spacer { flex: 1; }
+    .preview-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #cccccc;
+      border: 1px solid var(--line);
+      background: #0c0c0c;
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .preview-pill .status-dot { width: 6px; height: 6px; }
+    .avatar-self {
+      height: 34px;
+      width: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      background: #141414;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 22px; margin-bottom: 25px; }
+    .eyebrow { color: var(--subtle); font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+    h1 { margin: 0; font-family: Manrope, sans-serif; font-weight: 800; letter-spacing: -1.7px; font-size: clamp(29px, 3vw, 39px); line-height: 1.12; color: #ffffff; }
+    .subtitle { color: var(--text-body); margin: 10px 0 0; line-height: 1.6; font-size: 13px; }
+    .heading-actions { display: flex; gap: 9px; align-items: center; flex-shrink: 0; }
+
+    .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 17px; }
+    .search-wrap { position: relative; flex: 1; min-width: 170px; }
+    .search-wrap .ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); width: 17px; height: 17px; }
+    .search {
+      width: 100%;
+      height: 43px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0 75px 0 42px;
+      outline: none;
+      color: #ffffff;
+      transition: border .15s, box-shadow .15s;
+    }
+    .search:focus { border-color: #555555; box-shadow: 0 0 0 1px #555555; }
+    .search::placeholder { color: var(--subtle); }
+    .shortcut {
+      position: absolute;
+      right: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 1px solid var(--line);
+      background: #141414;
+      border-radius: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      padding: 3px 6px;
+      font-family: monospace;
+    }
+    .select-wrap { position: relative; }
+    .select {
+      appearance: none;
+      height: 43px;
+      padding: 0 33px 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      outline: none;
+    }
+    .select:focus { border-color: #555555; }
+    .select-wrap .ico { position: absolute; right: 11px; top: 13px; width: 15px; height: 15px; color: var(--muted); pointer-events: none; }
+    .view-switch {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      padding: 3px;
+      gap: 2px;
+      height: 43px;
+    }
+    .view-btn {
+      display: grid;
+      place-items: center;
+      width: 35px;
+      height: 35px;
+      color: var(--muted);
+      border: 0;
+      background: transparent;
+      border-radius: 8px;
+      transition: background .15s, color .15s;
+    }
+    .view-btn:hover { color: #ffffff; }
+    .view-btn.active { background: #ffffff; color: #000000; }
+
+    .filters { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; padding-bottom: 5px; margin-bottom: 18px; }
+    .filters::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid transparent;
+      padding: 8px 13px;
+      border-radius: 999px;
+      white-space: nowrap;
+      color: var(--muted);
+      background: transparent;
+      font-size: 11px;
+      font-weight: 700;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .filter-chip:hover { background: #141414; color: #ffffff; }
+    .filter-chip.active { border-color: #333333; background: #181818; color: #ffffff; }
+    .filter-chip span { opacity: .6; font-size: 10px; }
+
+    .results-bar { display: flex; align-items: center; gap: 10px; margin: 4px 1px 13px; color: var(--muted); font-size: 11px; }
+    .results-bar strong { color: #ffffff; }
+    .results-spacer { flex: 1; }
+    .sort-note { display: flex; align-items: center; gap: 5px; color: var(--muted); }
+    
+    .list-view {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: visible;
+    }
+    .post-row {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) 116px;
+      gap: 15px;
+      align-items: start;
+      padding: 20px 21px;
+      border-bottom: 1px solid var(--line);
+      transition: background .15s;
+    }
+    .post-row:last-child { border-bottom: 0; }
+    .post-row:hover { background: #121212; }
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 11px;
+      background: #161616;
+      border: 1px solid #262626;
+    }
+    .post-main { min-width: 0; }
+    .post-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 11px; color: var(--muted); margin: 1px 0 8px; }
+    .post-author { color: #ffffff; font-weight: 700; }
+    .meta-dot { color: #383838; }
+    .post-title { margin: 0 0 6px; font-family: Manrope, sans-serif; font-size: 14px; font-weight: 800; letter-spacing: -.25px; line-height: 1.45; color: #ffffff; }
+    .post-text { margin: 0; max-width: 850px; color: var(--text-body); line-height: 1.65; font-size: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .post-footer { display: flex; align-items: center; gap: 7px; margin-top: 12px; flex-wrap: wrap; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: transparent;
+      border: 1px solid #282828;
+      color: #c4c4c4;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .tag .tag-dot { width: 5px; height: 5px; border-radius: 50%; background: #ffffff; }
+    .source-type { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 10px; }
+    .source-type .ico { width: 13px; height: 13px; }
+    .post-actions { display: flex; align-items: center; justify-content: flex-end; gap: 4px; padding-top: 1px; }
+    .icon-btn {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--muted);
+      background: transparent;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .icon-btn:hover { color: #ffffff; background: #1a1a1a; border-color: #2b2b2b; }
+    .icon-btn.unsave:hover { color: #ffffff; background: #222222; border-color: #444444; }
+    .icon-btn .ico { width: 17px; height: 17px; }
+
+    .grid-view { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+    .post-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 236px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: transform .16s, border-color .16s, background .16s;
+    }
+    .post-card:hover { transform: translateY(-2px); border-color: #444444; background: #0f0f0f; }
+    .card-top { display: flex; align-items: center; gap: 9px; }
+    .card-top .post-avatar { width: 31px; height: 31px; font-size: 9px; }
+    .card-author-wrap { min-width: 0; flex: 1; }
+    .card-author { color: #ffffff; font-weight: 700; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .card-date { color: var(--muted); font-size: 10px; margin-top: 3px; }
+    .card-title { font-family: Manrope, sans-serif; font-size: 13px; font-weight: 800; letter-spacing: -.25px; line-height: 1.5; margin: 16px 0 7px; color: #ffffff; }
+    .card-text { color: var(--text-body); font-size: 11px; line-height: 1.65; margin: 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-spacer { flex: 1; min-height: 14px; }
+    .card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 5px; margin-top: 13px; border-top: 1px solid var(--line); padding-top: 11px; }
+    .card-bottom .tag { padding: 4px 7px; font-size: 9px; }
+    .card-actions { display: flex; gap: 1px; }
+    .card-actions .icon-btn { width: 28px; height: 28px; }
+
+    .pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; color: var(--muted); font-size: 11px; }
+    .page-buttons { display: flex; gap: 5px; }
+    .page-btn {
+      min-width: 31px;
+      height: 31px;
+      padding: 0 8px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: var(--surface);
+      font-size: 11px;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .page-btn:hover:not(:disabled) { color: #ffffff; border-color: #383838; }
+    .page-btn.active { background: #ffffff; color: #000000; border-color: #ffffff; font-weight: 700; }
+    .page-btn:disabled { opacity: .25; cursor: not-allowed; }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      background: var(--surface);
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      padding: 70px 20px;
+      display: grid;
+      justify-items: center;
+      text-align: center;
+    }
+    .empty-icon {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      color: #ffffff;
+      margin-bottom: 17px;
+    }
+    .empty-state h2 { font-family: Manrope, sans-serif; font-size: 17px; margin: 0 0 7px; letter-spacing: -.4px; color: #ffffff; }
+    .empty-state p { max-width: 350px; color: var(--muted); line-height: 1.65; margin: 0 0 17px; font-size: 12px; }
+
+    .footer-note { margin-top: 28px; display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--subtle); font-size: 10px; }
+    .footer-brand { display: flex; align-items: center; gap: 6px; color: var(--subtle); }
+    .footer-brand svg { width: 14px; height: 14px; }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 50;
+      max-width: min(380px, calc(100vw - 32px));
+      background: #111111;
+      color: #ffffff;
+      border: 1px solid #333333;
+      padding: 13px 16px;
+      border-radius: 10px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.6);
+      font-size: 12px;
+      line-height: 1.5;
+      transform: translateY(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s, transform .2s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .modal-backdrop {
+      position: fixed;
+      z-index: 60;
+      inset: 0;
+      background: rgba(0, 0, 0, .85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(440px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 25px 90px rgba(0,0,0,.8);
+    }
+    .modal-icon {
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      color: #ffffff;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .modal h2 { margin: 0 0 9px; font-family: Manrope, sans-serif; letter-spacing: -.5px; font-size: 19px; color: #ffffff; }
+    .modal p { color: var(--text-body); line-height: 1.7; font-size: 12px; margin: 0; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 23px; }
+    .modal-body-list { display: grid; gap: 10px; margin-top: 14px; }
+    .modal-option-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #111111;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+    }
+    .modal-option-card:hover { border-color: #383838; background: #151515; }
+    .modal-option-title { font-weight: 700; font-size: 12px; color: #ffffff; display: flex; align-items: center; justify-content: space-between; }
+    .modal-option-desc { font-size: 11px; color: var(--muted); line-height: 1.45; }
+    .modal-input {
+      width: 100%;
+      height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      padding: 0 11px;
+      font-size: 13px;
+      margin: 6px 0 10px;
+      color: #ffffff;
+      background: #000000;
+    }
+    .modal-input:focus { border-color: #ffffff; outline: none; }
+    .mobile-brand { display: none; }
+    @media (min-width: 1500px) { .main { padding-left: 62px; padding-right: 62px; } .post-row { padding: 22px 24px; } }
+    @media (max-width: 1050px) { .app { grid-template-columns: 215px minmax(0, 1fr); } .sidebar { padding-left: 13px; padding-right: 13px; } .main { padding: 25px 24px; } .grid-view { gap: 9px; } .post-card { padding: 13px; } .post-row { grid-template-columns: 38px minmax(0,1fr) 75px; gap: 11px; padding: 17px 15px; } }
+    @media (max-width: 760px) {
+      .app { display: block; }
+      .sidebar {
+        position: sticky;
+        z-index: 20;
+        height: auto;
+        padding: 13px 16px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        flex-direction: row;
+        align-items: center;
+        gap: 18px;
+        background: rgba(8, 8, 8, .96);
+        backdrop-filter: blur(12px);
+      }
+      .brand { padding: 0; gap: 9px; }
+      .brand-mark { width: 33px; height: 33px; border-radius: 9px; }
+      .brand-name { font-size: 19px; }
+      .brand-caption, .sidebar .nav-section-label, .sidebar-bottom { display: none; }
+      .sidebar nav { margin-left: auto; }
+      .nav-list { display: flex; gap: 4px; }
+      .nav-item { padding: 9px; width: auto; }
+      .nav-item .label, .nav-count, .nav-item:not(.active) { display: none; }
+      .main { padding: 22px 16px 28px; }
+      .topbar { margin-bottom: 25px; }
+      .breadcrumb { display: none; }
+      .preview-pill { margin-left: auto; }
+      .page-heading { align-items: flex-start; flex-direction: column; gap: 16px; margin-bottom: 20px; }
+      .heading-actions { width: 100%; }
+      .heading-actions .btn { flex: 1; }
+      .toolbar { flex-wrap: wrap; }
+      .search-wrap { flex-basis: 100%; }
+      .select-wrap { flex: 1; }
+      .select { width: 100%; }
+      .view-switch { margin-left: auto; }
+      .grid-view { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .post-row { grid-template-columns: 36px minmax(0,1fr) 32px; gap: 10px; padding: 15px 12px; }
+      .post-actions { display: grid; }
+      .post-actions .open-post { display: none; }
+      .post-title { font-size: 13px; }
+      .post-text { -webkit-line-clamp: 3; }
+      .footer-note { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 420px) {
+      .preview-pill { font-size: 0; padding: 9px; }
+      .preview-pill .status-dot { width: 7px; height: 7px; }
+      .grid-view { gap: 7px; }
+      .post-card { min-height: 224px; padding: 10px; }
+      .card-title { font-size: 12px; margin-top: 12px; }
+      .card-text { font-size: 10px; }
+      .card-bottom .tag { max-width: 78px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .page-heading h1 { font-size: 31px; }
+      .post-row { grid-template-columns: 32px minmax(0,1fr) 28px; gap: 8px; padding: 14px 10px; }
+      .post-avatar { width: 32px; height: 32px; }
+      .post-meta { gap: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6.5 4.8A1.8 1.8 0 0 1 8.3 3h7.4a1.8 1.8 0 0 1 1.8 1.8V21l-5.5-3.6L6.5 21V4.8Z"/><path d="M9 7h6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.4"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.4"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.4"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.4"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 5h11M9 12h11M9 19h11"/><path d="M4 5h.01M4 12h.01M4 19h.01" stroke-width="2.7"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></symbol>
+    <symbol id="i-bookmark-minus" viewBox="0 0 24 24"><path d="M6.5 4.8A1.8 1.8 0 0 1 8.3 3h7.4a1.8 1.8 0 0 1 1.8 1.8V21l-5.5-3.6L6.5 21V4.8Z"/><path d="M9 11h6"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10m-7 6h4"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 9h17"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M13 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10Z"/><path d="M13 3v7h7M8 14h8M8 17h8"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.1 0l-2 2a5 5 0 0 0 7.1 7.1l1.1-1.1"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9A7 7 0 0 1 17.4 6L20 9M4 15l2.6 3A7 7 0 0 0 18.5 15"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15ZM5 2l.7 1.3L7 4l-1.3.7L5 6l-.7-1.3L3 4l1.3-.7L5 2Z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  </svg>
+
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="Saved home">
+        <span class="brand-mark"><svg class="ico" style="width:23px;height:23px;stroke-width:1.9"><use href="#i-bookmark"/></svg></span>
+        <span><span class="brand-name">saved.</span><span class="brand-caption" style="display:block">your Threads library</span></span>
+      </a>
+      <nav>
+        <div class="nav-section-label">Library</div>
+        <div class="nav-list">
+          <button class="nav-item active" data-filter="all"><svg class="ico"><use href="#i-bookmark"/></svg><span class="label">All saved posts</span><span class="nav-count" id="navCount">14</span></button>
+          <button class="nav-item" data-filter="articles"><svg class="ico"><use href="#i-file"/></svg><span class="label">Articles & reads</span></button>
+          <button class="nav-item" data-filter="ideas"><svg class="ico"><use href="#i-sparkles"/></svg><span class="label">Ideas & inspiration</span></button>
+          <button class="nav-item" data-filter="dev"><svg class="ico"><use href="#i-layers"/></svg><span class="label">Development</span></button>
+        </div>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sync-card">
+          <div class="sync-heading"><span class="status-dot status-disconnected"></span> Threads not connected</div>
+          <p class="sync-copy">This is a UI preview using sample posts. Connect the browser extension to read or change your real Saved collection.</p>
+          <button id="connectBtn" class="btn btn-dark btn-full"><svg class="ico" style="width:15px;height:15px"><use href="#i-link"/></svg> Connect Threads</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="breadcrumb"><span>Workspace</span><span>›</span><strong>Saved library</strong></div>
+        <div class="topbar-spacer"></div>
+        <div class="preview-pill"><span class="status-dot status-disconnected"></span> Preview mode</div>
+        <div class="avatar-self" aria-label="Local profile">K</div>
+      </div>
+
+      <section class="page-heading">
+        <div>
+          <div class="eyebrow">A little space for what matters</div>
+          <h1>Your saved corner.</h1>
+          <p class="subtitle">Good posts deserve better than disappearing into an endless feed.</p>
+        </div>
+        <div class="heading-actions">
+          <button id="syncBtn" class="btn btn-light"><svg class="ico" style="width:15px;height:15px"><use href="#i-refresh"/></svg> Sync posts</button>
+          <button id="exportBtn" class="btn btn-dark"><svg class="ico" style="width:15px;height:15px"><use href="#i-file"/></svg> Export library</button>
+        </div>
+      </section>
+
+      <section class="toolbar" aria-label="Search and display options">
+        <div class="search-wrap"><svg class="ico"><use href="#i-search"/></svg><input id="searchInput" class="search" type="search" placeholder="Search posts, people, or keywords..." autocomplete="off"/><span class="shortcut">Ctrl K</span></div>
+        <div class="select-wrap">
+          <select id="sortSelect" class="select" aria-label="Sort posts">
+            <option value="recent_saved">Recent saved</option>
+            <option value="oldest_saved">Oldest saved</option>
+          </select>
+          <svg class="ico"><use href="#i-chevron"/></svg>
+        </div>
+        <div class="view-switch" aria-label="Change view">
+          <button class="view-btn active" data-view="list" aria-label="Minimal list view" title="List view"><svg class="ico"><use href="#i-list"/></svg></button>
+          <button class="view-btn" data-view="grid" aria-label="3 by 3 grid view" title="3 × 3 grid"><svg class="ico"><use href="#i-grid"/></svg></button>
+        </div>
+      </section>
+
+      <div class="filters" id="filters">
+        <button class="filter-chip active" data-filter="all">Everything <span>14</span></button>
+        <button class="filter-chip" data-filter="dev">Development <span>5</span></button>
+        <button class="filter-chip" data-filter="design">Design <span>3</span></button>
+        <button class="filter-chip" data-filter="articles">Articles & reads <span>3</span></button>
+        <button class="filter-chip" data-filter="ideas">Ideas <span>3</span></button>
+      </div>
+
+      <div class="results-bar"><span id="resultsCount">Showing <strong>14 posts</strong></span><span class="results-spacer"></span><span class="sort-note"><svg class="ico" style="width:14px;height:14px"><use href="#i-filter"/></svg> <span id="sortDescription">Recent saved</span></span><span class="meta-dot">•</span><span id="viewDescription">Minimal list</span></div>
+      <section id="postsContainer" class="list-view" aria-live="polite"></section>
+      <div class="pagination" id="pagination"><span id="pageInfo">Showing 1–14 of 14 posts</span><div class="page-buttons" id="pageButtons"></div></div>
+
+      <footer class="footer-note"><span class="footer-brand"><svg class="ico"><use href="#i-bookmark"/></svg> saved. &nbsp; Made to keep good things close.</span><span>Private by design · Stored locally in this prototype</span></footer>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-icon"><svg class="ico" style="width:22px;height:22px"><use href="#i-bookmark"/></svg></div>
+      <h2 id="modalTitle">Threads connection isn't active</h2>
+      <div id="modalBody">
+        <p id="modalCopy">This is a front-end prototype with sample posts. To connect a real account safely, the next step is a Chromium extension that reads your logged-in Saved page and verifies Unsave actions through the Threads interface. This screen does not access your account or change saved posts.</p>
+      </div>
+      <div class="modal-actions" id="modalActions">
+        <button class="btn btn-light" id="closeModal">Close</button>
+        <button class="btn btn-dark" id="modalOkay">Got it</button>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="jsonFileInput" accept=".json" style="display:none" />
+
+  <script>
+    const demoPosts = [
+      {id:1,handle:'@buildwithgo',initials:'BG',color:'#e4eade',date:'Oct 13, 2026',stamp:1791850000,title:'Go concurrency patterns I keep coming back to',text:'A practical collection of patterns for goroutines, channels, cancellation, and keeping concurrent code understandable. The best abstraction is usually the one your teammate can reason about at 2 AM.',category:'Development',filter:'dev',type:'Thread',url:'https://www.threads.net/@buildwithgo/post/C-go-patterns-101',savedAt:'2026-10-13'},
+      {id:2,handle:'@minimal.product',initials:'MP',color:'#efe4d7',date:'Oct 12, 2026',stamp:1791762000,title:'A good interface knows when to get out of the way',text:'Whitespace is not wasted space. Clear hierarchy, restrained color, and fewer competing actions make the important thing easier to find. Design for the task, not for the screenshot.',category:'Design',filter:'design',type:'Thread',url:'https://www.threads.net/@minimal.product/post/C-minimal-interface-102',savedAt:'2026-10-12'},
+      {id:3,handle:'@read.more',initials:'RM',color:'#eee0e7',date:'Oct 10, 2026',stamp:1791588000,title:'The Pragmatic Programmer — notes worth revisiting',text:'Care about your craft, automate repetitive work, and make reversible decisions where uncertainty is high. Small habits compound, especially when the codebase outlives the original plan.',category:'Articles & reads',filter:'articles',type:'Thread',url:'https://www.threads.net/@read.more/post/C-pragmatic-programmer-104',savedAt:'2026-10-10'},
+      {id:4,handle:'@sideproject.club',initials:'SC',color:'#dbe9e0',date:'Oct 7, 2026',stamp:1791327000,title:'A tiny tool can be a better portfolio project',text:'Pick a real irritation, keep the scope brutally small, finish the boring edges, and write down why you made each trade-off. A complete small tool often says more than a giant unfinished clone.',category:'Ideas',filter:'ideas',type:'Thread',url:'https://www.threads.net/@sideproject.club/post/C-tiny-tool-portfolio-107',savedAt:'2026-10-07'}
+    ];
+    demoPosts.forEach(p => {
+      p.savedStamp = p.stamp;
+      p.postStamp = p.stamp;
+      p.savedDate = p.date;
+      p.postedDate = p.date;
+    });
+
+    const STORAGE_KEY = 'saved-ui-demo-v1';
+    const CACHE_BACKEND_KEY = 'saved-backend-cache-v2';
+    let posts = loadPosts();
+    let view = localStorage.getItem('saved-ui-view') || 'list';
+    let currentSort = localStorage.getItem('saved-ui-sort') || 'recent_saved';
+    if (!['recent_saved', 'oldest_saved'].includes(currentSort)) {
+      currentSort = 'recent_saved';
+      localStorage.setItem('saved-ui-sort', currentSort);
+    }
+    let currentFilter = 'all';
+    let currentPage = 1;
+    let toastTimer;
+    let backendAvailable = false;
+    let oauthConfigured = false;
+    let encryptionConfigured = false;
+    let accountConnected = false;
+    let liveMode = false;
+    let connectedProfile = null;
+
+    function loadPosts(){
+      try {
+        const cached = localStorage.getItem(CACHE_BACKEND_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : demoPosts;
+      } catch {
+        return demoPosts;
+      }
+    }
+    function persist(){ if(!liveMode) localStorage.setItem(STORAGE_KEY, JSON.stringify(posts)); }
+    function icon(name, extra=''){ return `<svg class="ico ${extra}" aria-hidden="true"><use href="#i-${name}"/></svg>`; }
+    function escapeHtml(value=''){ return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function formatCount(n){ return `${n} ${n===1?'post':'posts'}`; }
+
+    function detectCategory(text='', username=''){
+      const lower = `${text} ${username}`.toLowerCase();
+      if(/\b(code|go|golang|python|rust|sql|db|postgres|api|concurrency|dev|developer|backend|frontend|linux|git|docker|programming)\b/.test(lower)){
+        return { category: 'Development', filter: 'dev', color: '#e4eade' };
+      }
+      if(/\b(design|ui|ux|interface|typography|tokens|css|layout|whitespace|visual|palette|brand)\b/.test(lower)){
+        return { category: 'Design', filter: 'design', color: '#efe4d7' };
+      }
+      if(/\b(read|book|programmer|craft|notes|article|essay|queue|study|learn|review)\b/.test(lower)){
+        return { category: 'Articles & reads', filter: 'articles', color: '#eee0e7' };
+      }
+      if(/\b(idea|project|tool|startup|product|feature|workflow|system|automation|club)\b/.test(lower)){
+        return { category: 'Ideas', filter: 'ideas', color: '#dbe9e0' };
+      }
+      return { category: 'Saved', filter: 'all', color: '#e4e7df' };
+    }
+
+    function getFilteredPosts(){
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      let list = posts.filter(p => {
+        const filterMatch = currentFilter === 'all' || p.filter === currentFilter;
+        const haystack = `${p.handle} ${p.title} ${p.text} ${p.category} ${p.type}`.toLowerCase();
+        return filterMatch && (!query || haystack.includes(query));
+      });
+
+      const sort = document.getElementById('sortSelect')?.value || currentSort;
+
+      list.sort((a,b) => {
+        switch(sort){
+          case 'oldest_saved': {
+            const diff = (a.stamp || 0) - (b.stamp || 0);
+            if (diff !== 0) return diff;
+            return String(a.id || '').localeCompare(String(b.id || ''));
+          }
+          case 'recent_saved':
+          default: {
+            const diff = (b.stamp || 0) - (a.stamp || 0);
+            if (diff !== 0) return diff;
+            return String(a.id || '').localeCompare(String(b.id || ''));
+          }
+        }
+      });
+      return list;
+    }
+
+    function avatar(p){ return `<div class="post-avatar">${escapeHtml(p.initials || p.handle.slice(1,3).toUpperCase())}</div>`; }
+
+    function postRow(p){
+      return `<article class="post-row" data-post-id="${escapeHtml(p.id)}">
+        ${avatar(p)}
+        <div class="post-main">
+          <div class="post-meta">
+            <span class="post-author">${escapeHtml(p.handle)}</span>
+            <span class="meta-dot">•</span>
+            <span>${escapeHtml(p.date || 'Recent')}</span>
+            <span class="meta-dot">•</span>
+            <span>${escapeHtml(p.type)}</span>
+          </div>
+          <h2 class="post-title">${escapeHtml(p.title)}</h2>
+          <p class="post-text">${escapeHtml(p.text)}</p>
+          <div class="post-footer">
+            <span class="tag"><span class="tag-dot"></span>${escapeHtml(p.category)}</span>
+            <span class="source-type">${icon('bookmark')} ${liveMode ? 'Saved backend' : 'Saved preview'}</span>
+          </div>
+        </div>
+        <div class="post-actions">
+          <button class="icon-btn open-post" data-action="open" data-id="${escapeHtml(p.id)}" aria-label="Open original post" title="Open on Threads">${icon('external')}</button>
+          <button class="icon-btn unsave" data-action="unsave" data-id="${escapeHtml(p.id)}" aria-label="Unsave post" title="Unsave">${icon('bookmark-minus')}</button>
+          <button class="icon-btn" data-action="more" data-id="${escapeHtml(p.id)}" aria-label="More actions" title="More actions">${icon('more')}</button>
+        </div>
+      </article>`;
+    }
+
+    function postCard(p){
+      return `<article class="post-card" data-post-id="${escapeHtml(p.id)}">
+        <div class="card-top">
+          ${avatar(p)}
+          <div class="card-author-wrap">
+            <div class="card-author">${escapeHtml(p.handle)}</div>
+            <div class="card-date">${escapeHtml(p.date || 'Recent')}</div>
+          </div>
+          <button class="icon-btn" data-action="more" data-id="${escapeHtml(p.id)}" aria-label="More actions">${icon('more')}</button>
+        </div>
+        <h2 class="card-title">${escapeHtml(p.title)}</h2>
+        <p class="card-text">${escapeHtml(p.text)}</p>
+        <div class="card-spacer"></div>
+        <div class="card-bottom">
+          <span class="tag"><span class="tag-dot"></span>${escapeHtml(p.category)}</span>
+          <div class="card-actions">
+            <button class="icon-btn" data-action="open" data-id="${escapeHtml(p.id)}" aria-label="Open original post" title="Open on Threads">${icon('external')}</button>
+            <button class="icon-btn unsave" data-action="unsave" data-id="${escapeHtml(p.id)}" aria-label="Unsave post" title="Unsave">${icon('bookmark-minus')}</button>
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function render(){
+      const all = getFilteredPosts();
+      const perPage = view === 'grid' ? 9 : 10;
+      const pages = Math.max(1, Math.ceil(all.length / perPage));
+      currentPage = Math.min(currentPage, pages);
+      const start = (currentPage - 1) * perPage;
+      const visible = all.slice(start, start+perPage);
+      const container = document.getElementById('postsContainer');
+      container.className = view === 'grid' ? 'grid-view' : 'list-view';
+      document.getElementById('viewDescription').textContent = view === 'grid' ? '3 × 3 cards' : 'Minimal list';
+
+      const sort = document.getElementById('sortSelect')?.value || currentSort;
+      const sortLabels = {
+        recent_saved: 'Recent saved',
+        oldest_saved: 'Oldest saved',
+      };
+      const sortDescEl = document.getElementById('sortDescription');
+      if (sortDescEl) sortDescEl.textContent = sortLabels[sort] || 'Recent saved';
+
+      document.getElementById('resultsCount').innerHTML = `Showing <strong>${formatCount(all.length)}</strong>`;
+      document.getElementById('navCount').textContent = posts.length;
+      updateFilterCounts();
+      document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+      if(!visible.length){
+        const emptyCopy = posts.length
+          ? 'Try another keyword or switch to a different collection.'
+          : liveMode
+            ? 'Your account is connected, but the SQLite archive is currently empty. Use the "Sync posts" button to populate sample posts or import from the browser scanner.'
+            : 'Your saved posts will appear here once Saved is connected to your Threads account.';
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">${icon(posts.length ? 'search' : 'bookmark')}</div><h2>${posts.length ? 'No posts found' : 'Your shelf is clear'}</h2><p>${escapeHtml(emptyCopy)}</p><button class="btn btn-light" id="resetFilters">${posts.length ? 'Clear search and filters' : (liveMode ? 'Sync / Import options' : 'Connect account')}</button></div>`;
+      } else {
+        container.innerHTML = visible.map(view==='grid' ? postCard : postRow).join('');
+      }
+      document.getElementById('pagination').style.display = all.length ? 'flex' : 'none';
+      document.getElementById('pageInfo').textContent = `Showing ${all.length ? start+1 : 0}–${Math.min(start+perPage,all.length)} of ${all.length} posts`;
+      const pagesEl = document.getElementById('pageButtons');
+      pagesEl.innerHTML = `<button class="page-btn" data-page="${currentPage-1}" ${currentPage===1?'disabled':''} aria-label="Previous page">‹</button>` + Array.from({length:pages},(_,i)=>`<button class="page-btn ${currentPage===i+1?'active':''}" data-page="${i+1}">${i+1}</button>`).join('') + `<button class="page-btn" data-page="${currentPage+1}" ${currentPage===pages?'disabled':''} aria-label="Next page">›</button>`;
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.filter === currentFilter));
+      document.querySelectorAll('.filter-chip').forEach(b => b.classList.toggle('active', b.dataset.filter === currentFilter));
+    }
+    function updateFilterCounts(){
+      const counts = {all:posts.length,dev:posts.filter(p=>p.filter==='dev').length,design:posts.filter(p=>p.filter==='design').length,articles:posts.filter(p=>p.filter==='articles').length,ideas:posts.filter(p=>p.filter==='ideas').length};
+      document.querySelectorAll('.filter-chip').forEach(b=>{const s=b.querySelector('span');if(s)s.textContent=counts[b.dataset.filter]??posts.length;});
+    }
+    function showToast(message){ const t=document.getElementById('toast'); t.textContent=message; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3400); }
+    function openModal(){document.getElementById('modalBackdrop').classList.add('open');}
+    function closeModal(){document.getElementById('modalBackdrop').classList.remove('open');}
+
+    function showModal({ title, bodyHtml, actionsHtml }){
+      document.getElementById('modalTitle').textContent = title;
+      if(bodyHtml !== undefined) document.getElementById('modalBody').innerHTML = bodyHtml;
+      if(actionsHtml !== undefined) document.getElementById('modalActions').innerHTML = actionsHtml;
+      openModal();
+    }
+
+    async function unsavePost(id){
+      const post = posts.find(p => String(p.id) === String(id));
+      if(!post) return;
+      if(liveMode){
+        const yes = window.confirm(`Remove “${post.title}” from your local Saved archive?\n\nThis will remove the post from your local database. To unsave on Threads itself, open the post on Threads.`);
+        if(!yes) return;
+        try {
+          await apiJson(`/api/saved-posts?permalink=${encodeURIComponent(post.url || post.id)}`, { method:'DELETE' });
+          posts = posts.filter(p => String(p.id) !== String(id));
+          render();
+          showToast('Removed from your local archive.');
+        } catch(error) {
+          showToast(error.message || 'Could not remove post from archive.');
+        }
+        return;
+      }
+      const yes = window.confirm(`Remove “${post.title}” from this demo library?\n\nPreview mode only: this will NOT unsave the post on Threads.`);
+      if(!yes) return;
+      posts = posts.filter(p => String(p.id) !== String(id));
+      persist();
+      render();
+      showToast('Removed from local demo.');
+    }
+
+    async function apiJson(path, options={}){
+      const response = await fetch(path, { credentials:'same-origin', ...options, headers:{ ...(options.headers||{}), ...(options.body ? {'content-type':'application/json'} : {}) } });
+      const body = await response.json().catch(()=>({}));
+      if(!response.ok) throw new Error(body.message || `Request failed (${response.status})`);
+      return body;
+    }
+    function prettyDate(value){
+      if(!value) return 'Recent';
+      const date = new Date(value);
+      if(Number.isNaN(date.getTime())) return String(value).slice(0,30);
+      return new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric'}).format(date);
+    }
+
+    function parseTimestamp(val) {
+      if (!val) return 0;
+      if (typeof val === 'number') {
+        return val > 1e12 ? Math.floor(val / 1000) : Math.floor(val);
+      }
+      const parsed = Date.parse(val);
+      return Number.isFinite(parsed) ? (parsed > 1e12 ? Math.floor(parsed / 1000) : Math.floor(parsed)) : 0;
+    }
+
+    function cleanPostText(rawText, username) {
+      if (!rawText) return { title: 'Saved Threads post', text: '' };
+      const userLower = (username || '').toLowerCase().replace(/^@/, '');
+      const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+      const cleanLines = [];
+
+      for (let line of lines) {
+        line = line.replace(/[\s\u00a0]*(Translate|See translation)[\s\u00a0]*(\d+\/\d+)?$/i, '').replace(/[\s\u00a0]*\d+\/\d+$/, '').trim();
+        if (!line) continue;
+
+        const l = line.toLowerCase();
+        if (userLower && (l === `@${userLower}` || l === userLower)) continue;
+        if (l === 'threads' || l.endsWith(' threads') || l === 'original audio' || l === 'translated') continue;
+        if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(line)) continue;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(line)) continue;
+        if (/^\d+[smhdw]$/i.test(line)) continue;
+        if (/^[\d.,KMkm\s]+$/.test(line) && /\d/.test(line)) continue;
+        if (/^\d+[\s]*(likes?|replies|reposts?|views?|shares?)/i.test(line)) continue;
+
+        cleanLines.push(line);
+      }
+
+      const text = cleanLines.join('\n') || rawText;
+      const title = (cleanLines[0] || rawText.split('\n')[0] || 'Saved Threads post').slice(0, 110);
+      return { title, text };
+    }
+
+    function mapSavedRecord(record){
+      const stamp = parseTimestamp(record.timestamp || record.savedAt || record.saved_at);
+      const username = String(record.username || '').replace(/^@/,'');
+      const rawText = String(record.text || 'No text preview is available for this post.');
+      const cleaned = cleanPostText(rawText, username);
+      const cat = detectCategory(cleaned.text, username);
+      const dateDisplay = prettyDate(record.timestamp || record.savedAt || record.saved_at);
+      return {
+        id: record.permalink,
+        handle: username ? `@${username}` : '@unknown',
+        initials: username ? username.slice(0,2).toUpperCase() : 'TH',
+        color: cat.color,
+        date: dateDisplay,
+        stamp: stamp,
+        title: cleaned.title,
+        text: cleaned.text,
+        category: cat.category,
+        filter: cat.filter,
+        type: record.mediaType || record.media_type || 'Thread',
+        url: record.permalink,
+        savedAt: record.savedAt || record.saved_at || null,
+        timestamp: record.timestamp || null
+      };
+    }
+
+    async function loadBackendSavedPosts(sortOverride){
+      const sort = sortOverride || document.getElementById('sortSelect')?.value || currentSort;
+      try {
+        const firstPage = await apiJson(`/api/saved-posts?limit=200&offset=0&sort=${encodeURIComponent(sort)}`);
+        const firstChunk = (firstPage.data || []).map(mapSavedRecord);
+        if (firstChunk.length > 0 || !posts.length) {
+          posts = firstChunk;
+          currentPage = 1;
+          render();
+        }
+        try {
+          localStorage.setItem(CACHE_BACKEND_KEY, JSON.stringify(firstChunk.slice(0, 50)));
+        } catch {}
+
+        const total = Number(firstPage.meta?.total || 0);
+        if (total > 200) {
+          let offset = 200;
+          let combined = [...firstChunk];
+          while (offset < total && offset < 10000) {
+            const next = await apiJson(`/api/saved-posts?limit=200&offset=${offset}&sort=${encodeURIComponent(sort)}`);
+            combined = combined.concat((next.data || []).map(mapSavedRecord));
+            offset += 200;
+          }
+          posts = combined;
+          render();
+        }
+        return posts.length;
+      } catch(err) {
+        if (!posts.length) render();
+        throw err;
+      }
+    }
+
+    function updateConnectionUi(status){
+      backendAvailable=true;
+      oauthConfigured=Boolean(status.configured);
+      encryptionConfigured=Boolean(status.encryptionConfigured);
+      accountConnected=Boolean(status.connected);
+      connectedProfile=status.profile || null;
+      liveMode=accountConnected;
+      if(!liveMode && !posts.length){
+        posts=loadPosts();
+      }
+      const username=connectedProfile?.username ? `@${connectedProfile.username}` : 'Threads account';
+      updateLiveStatus();
+      document.querySelector('.sync-copy').textContent=accountConnected
+        ? `Connected as ${username}. Your local SQLite archive is active and ready to organize your bookmarks.`
+        : 'Connect using Meta Threads OAuth or use Quick Local Connect to activate your local SQLite archive.';
+      document.getElementById('connectBtn').innerHTML=icon(accountConnected?'check':'link')+(accountConnected?' Disconnect Threads':' Connect Threads');
+      document.querySelector('.avatar-self').textContent=connectedProfile?.username ? connectedProfile.username.slice(0,1).toUpperCase() : 'V';
+      document.querySelector('.avatar-self').setAttribute('aria-label',accountConnected?`Connected as ${username}`:'Local profile');
+      document.querySelector('.footer-note span:last-child').textContent=accountConnected?'Private by design · Backend archive in local SQLite':'Private by design · Stored locally in this prototype';
+      render();
+    }
+
+    let eventSource = null;
+    let sseLiveConnected = false;
+
+    function initRealtimeEvents(){
+      if (!window.EventSource) return;
+      if (eventSource) eventSource.close();
+
+      eventSource = new EventSource('/api/events');
+
+      eventSource.addEventListener('connected', () => {
+        sseLiveConnected = true;
+        updateLiveStatus();
+      });
+
+      eventSource.addEventListener('post_saved', (e) => {
+        try {
+          const payload = JSON.parse(e.data);
+          handleIncomingRealtimePosts(payload);
+        } catch (err) {
+          console.error('[Saved] Error parsing post_saved event:', err);
+        }
+      });
+
+      eventSource.addEventListener('post_deleted', (e) => {
+        try {
+          const payload = JSON.parse(e.data);
+          handleDeletedRealtimePost(payload);
+        } catch (err) {
+          console.error('[Saved] Error parsing post_deleted event:', err);
+        }
+      });
+
+      eventSource.onerror = () => {
+        sseLiveConnected = false;
+        updateLiveStatus();
+      };
+    }
+
+    function updateLiveStatus(){
+      const heading = document.querySelector('.sync-heading');
+      const pill = document.querySelector('.preview-pill');
+      if (accountConnected) {
+        if (heading) {
+          heading.innerHTML = `<span class="status-dot ${sseLiveConnected ? 'status-live-pulse' : 'status-connected'}"></span>${sseLiveConnected ? 'Connected (Live sync)' : 'Connected to Threads'}`;
+        }
+        if (pill) {
+          pill.innerHTML = `<span class="status-dot ${sseLiveConnected ? 'status-live-pulse' : 'status-connected'}"></span>${sseLiveConnected ? 'Live sync active' : 'Threads connected'}`;
+        }
+      } else {
+        if (heading) {
+          heading.innerHTML = '<span class="status-dot status-disconnected"></span> Threads not connected';
+        }
+        if (pill) {
+          pill.innerHTML = '<span class="status-dot status-disconnected"></span> Preview mode';
+        }
+      }
+    }
+
+    function handleIncomingRealtimePosts({ posts: incoming }){
+      if (!Array.isArray(incoming) || !incoming.length) return;
+      if (accountConnected && !liveMode) liveMode = true;
+
+      const mapped = incoming.map(mapSavedRecord);
+      const existingIds = new Set(posts.map(p => String(p.id)));
+      const fresh = mapped.filter(p => !existingIds.has(String(p.id)));
+
+      if (fresh.length > 0) {
+        posts = [...fresh, ...posts];
+        currentPage = 1;
+        render();
+
+        setTimeout(() => {
+          fresh.forEach(p => {
+            const el = document.querySelector(`[data-post-id="${CSS.escape(p.id)}"]`);
+            if (el) el.classList.add('post-just-arrived');
+          });
+        }, 30);
+
+        const authorName = fresh[0].handle.replace(/^@/, '');
+        const msg = fresh.length === 1
+          ? `Synced @${authorName}'s post in real time ✓`
+          : `Synced ${fresh.length} bookmarks in real time ✓`;
+        showToast(msg);
+      }
+    }
+
+    function handleDeletedRealtimePost({ permalink }){
+      if (!permalink) return;
+      const initialLen = posts.length;
+      posts = posts.filter(p => String(p.id) !== String(permalink) && String(p.url) !== String(permalink));
+      if (posts.length !== initialLen) {
+        render();
+        showToast('Bookmark removed from library.');
+      }
+    }
+
+    async function initialiseBackend(){
+      let status;
+      try{
+        status=await apiJson('/api/auth/status');
+      }catch{
+        backendAvailable=false;
+        liveMode=false;
+        posts=loadPosts();
+        render();
+        return;
+      }
+      updateConnectionUi(status);
+      initRealtimeEvents();
+      const params=new URLSearchParams(window.location.search);
+      if(accountConnected){
+        try{await loadBackendSavedPosts();}
+        catch(error){posts=[];render();showToast(error.message || 'Could not load backend archive.');}
+        if(params.get('connected')==='1') showToast(`Connected to Threads${connectedProfile?.username?' as @'+connectedProfile.username:''}.`);
+      }
+      if(params.get('oauth')==='denied') showToast('Threads authorization was cancelled.');
+      if(params.has('connected') || params.has('oauth')) window.history.replaceState({},'',window.location.pathname);
+    }
+
+    function openConnectModal(){
+      const defaultUsername = 'vinkanaka';
+      const oauthOption = oauthConfigured
+        ? `<div class="modal-option-card">
+             <div class="modal-option-title"><span>Official Meta OAuth</span><span class="tag">Configured</span></div>
+             <p class="modal-option-desc">Connect directly with Meta's official Threads OAuth authorization flow.</p>
+             <button class="btn btn-dark" style="margin-top:6px" id="startOAuthBtn">Authorize with Meta Threads</button>
+           </div>`
+        : `<div class="modal-option-card">
+             <div class="modal-option-title"><span>Official Meta OAuth</span><span class="tag">Requires .env</span></div>
+             <p class="modal-option-desc">Add THREADS_APP_ID and THREADS_APP_SECRET in .env to use Meta's OAuth screen.</p>
+           </div>`;
+
+      showModal({
+        title: 'Connect to Saved',
+        bodyHtml: `
+          <p>Choose how you would like to connect to your local Saved archive:</p>
+          <div class="modal-body-list">
+            <div class="modal-option-card">
+              <div class="modal-option-title"><span>Quick Local Connect</span><span class="tag">Ready</span></div>
+              <p class="modal-option-desc">Instant local connection without needing a Meta Developer account. Connects your local profile and activates the SQLite database archive.</p>
+              <label style="font-size:11px;font-weight:600;color:var(--muted);margin-top:6px;display:block">Your Threads username:</label>
+              <input type="text" id="devUsernameInput" class="modal-input" value="${defaultUsername}" placeholder="e.g. vinkanaka" />
+              <button class="btn btn-dark" id="submitDevConnectBtn">Connect Local Profile</button>
+            </div>
+            ${oauthOption}
+          </div>
+        `,
+        actionsHtml: `<button class="btn btn-light" id="closeModal">Cancel</button>`
+      });
+
+      document.getElementById('submitDevConnectBtn')?.addEventListener('click', async () => {
+        const username = document.getElementById('devUsernameInput')?.value.trim() || defaultUsername;
+        try {
+          const res = await apiJson('/api/auth/dev-connect', {
+            method: 'POST',
+            body: JSON.stringify({ username })
+          });
+          closeModal();
+          showToast(`Connected as @${res.profile.username}!`);
+          await initialiseBackend();
+        } catch(err) {
+          alert(err.message || 'Connection failed');
+        }
+      });
+
+      document.getElementById('startOAuthBtn')?.addEventListener('click', () => {
+        window.location.href = '/api/auth/threads/start';
+      });
+
+      document.getElementById('closeModal')?.addEventListener('click', closeModal);
+    }
+
+    function openSyncModal(){
+      showModal({
+        title: 'Sync & Import Saved Posts',
+        bodyHtml: `
+          <p>Import your Threads bookmarks into your local SQLite archive:</p>
+          <div class="modal-body-list">
+            <div class="modal-option-card">
+              <div class="modal-option-title"><span>Populate Sample Saved Posts</span><span class="tag">Instant</span></div>
+              <p class="modal-option-desc">Populate your SQLite archive with 14 curated high-signal tech & design posts to test search, categories, and offline reading immediately.</p>
+              <button class="btn btn-dark" style="margin-top:6px" id="seedArchiveBtn">Populate Sample Posts into Archive</button>
+            </div>
+
+            <div class="modal-option-card">
+              <div class="modal-option-title"><span>Import JSON File</span><span class="tag">Backup / Scanner</span></div>
+              <p class="modal-option-desc">Import bookmarks exported from the scanner extension, bookmarklet, or previous backups.</p>
+              <button class="btn btn-light" style="margin-top:6px" id="triggerJsonUploadBtn">Choose JSON File</button>
+            </div>
+
+            <div class="modal-option-card">
+              <div class="modal-option-title"><span>Chromium Scanner Extension</span><span class="tag">Brave / Chrome</span></div>
+              <p class="modal-option-desc">Load the unpacked extension located in <code>extension/</code> to auto-scan your live feed on <code>threads.net/saved</code>.</p>
+            </div>
+
+            <div class="modal-option-card">
+              <div class="modal-option-title"><span>1-Click Bookmarklet</span><span class="tag">Console / Bookmark</span></div>
+              <p class="modal-option-desc">Run directly on <code>threads.net/saved</code> in DevTools Console to scan and sync to this app without installing an extension.</p>
+              <button class="btn btn-light" style="margin-top:6px" id="copyBookmarkletBtn">Copy Bookmarklet Script</button>
+            </div>
+          </div>
+        `,
+        actionsHtml: `
+          <button class="btn btn-light" id="reloadArchiveBtn">Reload from DB</button>
+          <button class="btn btn-dark" id="closeModal">Done</button>
+        `
+      });
+
+      document.getElementById('seedArchiveBtn')?.addEventListener('click', async () => {
+        const payload = demoPosts.map(p => ({
+          permalink: p.url,
+          threadId: p.url.split('/').pop(),
+          username: p.handle.replace(/^@/,''),
+          text: `${p.title}\n\n${p.text}`,
+          timestamp: new Date(p.stamp * 1000).toISOString(),
+          mediaType: 'TEXT',
+          savedAt: new Date(p.stamp * 1000).toISOString()
+        }));
+
+        try {
+          const res = await apiJson('/api/saved-posts/sync', {
+            method: 'POST',
+            body: JSON.stringify({ completeScan: false, posts: payload })
+          });
+          closeModal();
+          showToast(`Successfully populated ${res.imported} posts into SQLite archive!`);
+          await loadBackendSavedPosts();
+        } catch(err) {
+          alert(`Sync error: ${err.message}`);
+        }
+      });
+
+      document.getElementById('triggerJsonUploadBtn')?.addEventListener('click', () => {
+        document.getElementById('jsonFileInput')?.click();
+      });
+
+      document.getElementById('copyBookmarkletBtn')?.addEventListener('click', () => {
+        const script = `(() => {
+  const posts = Array.from(document.querySelectorAll('a[href*="/post/"]')).map(a => {
+    const m = a.href.match(/\\/@([a-zA-Z0-9._]+)\\/post\\/([a-zA-Z0-9_-]+)/);
+    if (!m) return null;
+    const c = a.closest('[role="article"]') || a.parentElement?.parentElement;
+    const text = Array.from(c?.querySelectorAll('span[dir="auto"]') || []).map(s => s.textContent.trim()).filter(Boolean).join('\\n');
+    return { permalink: 'https://www.threads.net/@' + m[1] + '/post/' + m[2], threadId: m[2], username: m[1], text: text || 'Saved post', timestamp: new Date().toISOString() };
+  }).filter(Boolean);
+  fetch('http://localhost:3000/api/saved-posts/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ completeScan: false, posts }) })
+    .then(r => r.json()).then(d => alert('Synced ' + d.imported + ' posts to Saved!'))
+    .catch(e => alert('Error syncing: ' + e.message));
+})();`;
+        navigator.clipboard.writeText(script).then(() => {
+          showToast('Bookmarklet script copied to clipboard!');
+        }).catch(() => {
+          alert(script);
+        });
+      });
+
+      document.getElementById('reloadArchiveBtn')?.addEventListener('click', async () => {
+        closeModal();
+        try {
+          const count = await loadBackendSavedPosts();
+          showToast(`Reloaded ${count} posts from SQLite archive.`);
+        } catch(err) {
+          showToast(err.message);
+        }
+      });
+
+      document.getElementById('closeModal')?.addEventListener('click', closeModal);
+    }
+
+    document.getElementById('jsonFileInput')?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        const postsArray = Array.isArray(json) ? json : Array.isArray(json.posts) ? json.posts : null;
+        if (!postsArray) throw new Error('Invalid JSON format: expected an array or an object with a "posts" property.');
+
+        const res = await apiJson('/api/saved-posts/sync', {
+          method: 'POST',
+          body: JSON.stringify({ completeScan: false, posts: postsArray })
+        });
+        closeModal();
+        showToast(`Successfully imported ${res.imported} posts into SQLite archive!`);
+        await loadBackendSavedPosts();
+      } catch(err) {
+        alert(`Failed to import JSON: ${err.message}`);
+      } finally {
+        e.target.value = '';
+      }
+    });
+
+    document.querySelectorAll('.view-btn').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;localStorage.setItem('saved-ui-view',view);currentPage=1;render();}));
+    const sortSelectEl = document.getElementById('sortSelect');
+    if (sortSelectEl) {
+      sortSelectEl.value = currentSort;
+      sortSelectEl.addEventListener('change', async (e) => {
+        currentSort = e.target.value;
+        localStorage.setItem('saved-ui-sort', currentSort);
+        currentPage = 1;
+        if (liveMode) {
+          try {
+            await loadBackendSavedPosts(currentSort);
+          } catch (err) {
+            console.error('Error reloading sorted posts from backend:', err);
+            render();
+          }
+        } else {
+          render();
+        }
+      });
+    }
+    document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{currentFilter=b.dataset.filter;currentPage=1;render();}));
+    document.getElementById('postsContainer').addEventListener('click',e=>{
+      const btn=e.target.closest('[data-action]');
+      if(!btn){
+        if(e.target.closest('#resetFilters')){
+          document.getElementById('searchInput').value='';
+          currentFilter='all';
+          render();
+          if(!posts.length){
+            if(accountConnected) openSyncModal();
+            else openConnectModal();
+          }
+        }
+        return;
+      }
+      const id=btn.dataset.id; const post=posts.find(p=>String(p.id)===String(id)); if(!post)return;
+      if(btn.dataset.action==='unsave') unsavePost(id);
+      if(btn.dataset.action==='open'){
+        if(post.url && /^https:\/\/(www\.)?threads\.(net|com)\//i.test(post.url)) window.open(post.url,'_blank','noopener,noreferrer');
+        else showToast('No URL available for this post.');
+      }
+      if(btn.dataset.action==='more'){
+        showModal({
+          title: 'Post actions',
+          bodyHtml: `<p><strong>${escapeHtml(post.title)}</strong></p><p style="margin-top:6px;color:var(--muted)">Author: ${escapeHtml(post.handle)}<br>Source: ${escapeHtml(post.url || 'Local')}</p>`,
+          actionsHtml: `
+            <button class="btn btn-light" id="openExternalBtn">Open on Threads</button>
+            <button class="btn btn-dark" id="closeModal">Done</button>
+          `
+        });
+        document.getElementById('openExternalBtn')?.addEventListener('click', () => {
+          if(post.url) window.open(post.url,'_blank','noopener,noreferrer');
+          closeModal();
+        });
+        document.getElementById('closeModal')?.addEventListener('click', closeModal);
+      }
+    });
+
+    document.getElementById('pageButtons').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(!b||b.disabled)return;currentPage=Number(b.dataset.page);render();window.scrollTo({top:0,behavior:'smooth'});});
+    document.getElementById('connectBtn').addEventListener('click',async()=>{
+      if(!backendAvailable){
+        showModal({
+          title: 'Backend is starting or offline',
+          bodyHtml: '<p>Start the backend with <code>npm run dev</code> at <code>http://localhost:3000</code> to enable SQLite archive and OAuth.</p>',
+          actionsHtml: '<button class="btn btn-dark" id="closeModal">Got it</button>'
+        });
+        document.getElementById('closeModal')?.addEventListener('click', closeModal);
+        return;
+      }
+      if(!accountConnected){
+        openConnectModal();
+        return;
+      }
+      if(!window.confirm('Disconnect this Threads account from Saved? The imported SQLite archive will be preserved.')) return;
+      try{
+        await apiJson('/api/auth/disconnect',{method:'POST'});
+        accountConnected=false; liveMode=false; connectedProfile=null; posts=loadPosts();
+        updateConnectionUi({configured:oauthConfigured,encryptionConfigured,connected:false,profile:null});
+        showToast('Threads account disconnected. Local archive preserved.');
+      }catch(error){
+        showToast(error.message || 'Could not disconnect Threads.');
+      }
+    });
+
+    document.getElementById('syncBtn').addEventListener('click',async()=>{
+      if(!backendAvailable){
+        showModal({
+          title: 'Backend is offline',
+          bodyHtml: '<p>Start the backend with <code>npm run dev</code> at <code>http://localhost:3000</code> to sync posts into SQLite.</p>',
+          actionsHtml: '<button class="btn btn-dark" id="closeModal">Got it</button>'
+        });
+        document.getElementById('closeModal')?.addEventListener('click', closeModal);
+        return;
+      }
+      if(!accountConnected){
+        openConnectModal();
+        return;
+      }
+      openSyncModal();
+    });
+
+    document.getElementById('closeModal').addEventListener('click',closeModal);
+    document.getElementById('modalOkay').addEventListener('click',closeModal);
+    document.getElementById('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal();});
+    document.getElementById('exportBtn').addEventListener('click',()=>{
+      const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),mode:liveMode?'backend-archive':'demo-only',count:posts.length,posts},null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=liveMode?'saved-threads-archive.json':'saved-library-demo.json';a.click();URL.revokeObjectURL(url);showToast(liveMode?'Exported the SQLite archive as JSON.':'Exported demo library as JSON.');
+    });
+    document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.getElementById('searchInput').focus();}if(e.key==='Escape')closeModal();});
+    render();
+    initialiseBackend();
+  </script>
+</body>
+</html>

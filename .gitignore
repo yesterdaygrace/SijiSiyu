@@ -1,0 +1,13 @@
+.nuxt/
+.output/
+dist/
+node_modules/
+.env
+.env.*
+!.env.example
+data/*
+!data/.gitkeep
+*.log
+.DS_Store
+
+

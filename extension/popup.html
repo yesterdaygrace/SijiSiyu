@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Saved — Real-Time Sync</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #0c0c0c;
+      --surface-2: #141414;
+      --text: #ffffff;
+      --muted: #737373;
+      --line: #222222;
+      --line-strong: #333333;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      line-height: 1.5;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand {
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #ffffff;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #141414;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #555555;
+    }
+    .status-dot.online {
+      background: #ffffff;
+      box-shadow: 0 0 0 1px #000;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 13px;
+      margin-bottom: 12px;
+    }
+    .card h3 {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
+    .card p {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .realtime-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin: 10px 0;
+      font-size: 11px;
+    }
+    .realtime-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .queue-badge {
+      color: var(--muted);
+      font-size: 10px;
+    }
+    .count-display {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin: 8px 0;
+    }
+    .count-number {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .count-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .btn-group {
+      display: grid;
+      gap: 7px;
+    }
+    button {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background .15s, opacity .15s;
+    }
+    button:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+    .btn-primary {
+      background: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #e5e5e5;
+    }
+    .btn-secondary {
+      background: #000000;
+      color: #ffffff;
+      border-color: var(--line-strong);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: #141414;
+      border-color: #484848;
+    }
+    .progress-bar {
+      height: 3px;
+      background: #1a1a1a;
+      border-radius: 2px;
+      margin: 8px 0;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #ffffff;
+      width: 0%;
+      transition: width .2s;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 11px;
+    }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .footer-links a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+    .notice {
+      font-size: 11px;
+      color: #ffffff;
+      background: #141414;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">saved.</div>
+    <div class="status-badge" id="statusBadge"><span class="status-dot" id="statusDot"></span><span id="statusText">Checking...</span></div>
+  </div>
+
+  <div class="notice" id="threadsNotice">
+    Open <a href="https://www.threads.net/saved" target="_blank" style="color:#ffffff;font-weight:bold">threads.net/saved</a> to scan your bookmarks.
+  </div>
+
+  <div class="card">
+    <h3>Real-Time Sync Engine</h3>
+    <p>Live listener active: bookmarks clicked on Threads sync automatically in real time.</p>
+
+    <div class="realtime-pill">
+      <span class="realtime-label"><span class="status-dot online"></span> Auto-Sync Active</span>
+      <span class="queue-badge" id="queueStatus">Queue: 0 pending</span>
+    </div>
+
+    <div class="count-display">
+      <div class="count-number" id="scannedCount">0</div>
+      <div class="count-label">posts scanned in manual batch</div>
+    </div>
+
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" id="scanBtn">Auto-Scroll & Scan Feed</button>
+      <button class="btn-secondary" id="scanVisibleBtn">Scan Visible Only</button>
+      <button class="btn-secondary" id="syncBtn" disabled>Sync Batch to App (0)</button>
+      <button class="btn-secondary" id="flushQueueBtn" style="display:none">Flush Offline Queue</button>
+      <button class="btn-secondary" id="exportBtn" disabled>Download JSON</button>
+    </div>
+  </div>
+
+  <div class="footer-links">
+    <a href="http://localhost:3000" target="_blank">Open Saved App</a>
+    <a href="https://www.threads.net/saved" target="_blank">Open Threads Saved</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

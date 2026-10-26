@@ -1,0 +1,42 @@
+{
+  "name": "sijisiyu",
+  "version": "0.2.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Local-first Threads saved-post library with an official Threads API backend scaffold.",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "nuxt dev --port 3000",
+    "build": "nuxt build",
+    "prestart": "nuxt build",
+    "start": "node -r dotenv/config .output/server/index.mjs",
+    "postinstall": "nuxt prepare",
+    "test": "DATABASE_PATH=data/test.sqlite tsx --test test/**/*.test.ts",
+    "typecheck": "vue-tsc --noEmit 2>/dev/null || nuxt typecheck",
+    "lint": "tsc --noEmit",
+    "sync:auto": "node scripts/auto-sync-threads.mjs"
+  },
+  "dependencies": {
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "better-sqlite3": "^13.0.3",
+    "compression": "^1.8.2",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "nuxt": "^4.6.2",
+    "tailwindcss": "^3.4.19",
+    "vue": "^3.5.44"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/compression": "^1.8.1",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.30",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}
